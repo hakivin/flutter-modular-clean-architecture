@@ -12,6 +12,7 @@ import 'package:flutter_modular_app/usecase/workspace/get_workspace.dart';
 
 import 'common/repositories/api/profile_api_repository.dart';
 import 'common/repositories/api/workspace_api_repository.dart';
+import 'common/route_guard.dart';
 
 class AppModule extends Module {
   @override
@@ -41,7 +42,7 @@ class AppModule extends Module {
   List<ModularRoute> get routes => [
         ModuleRoute('/', module: HomeModule()),
         ModuleRoute('/second/', module: ProfileModule()),
-        ModuleRoute('/third/', module: ProfileModule(), guards: [AuthGuard(ModuleType.mock)]),
+        ModuleRoute('/third/', module: ProfileModule(), guards: [AuthGuard(ModuleType.ticket)]),
       ];
 }
 
@@ -54,28 +55,5 @@ class AppWidget extends StatelessWidget {
       title: 'My Smart App',
       theme: ThemeData(primarySwatch: Colors.blue),
     ).modular(); //added by extension
-  }
-}
-
-class AuthGuard extends RouteGuard {
-  final ModuleType authType;
-
-  AuthGuard(this.authType) : super(redirectTo: '/asdasd');
-
-  @override
-  Future<bool> canActivate(String path, ModularRoute router) {
-    Workspace workspace = Modular.get<Workspace>();
-    return Future.value(filterGuard(workspace.modules, authType));
-  }
-
-  bool filterGuard(List<ModuleType> modules, ModuleType directedModule) {
-    bool isFound = false;
-    for (var module in modules) {
-      if (module == directedModule) {
-        isFound = true;
-        break;
-      }
-    }
-    return isFound;
   }
 }
